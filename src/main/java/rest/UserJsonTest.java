@@ -16,7 +16,7 @@ import io.restassured.response.Response;
 
 public class UserJsonTest {
 	
-	//@Test
+	@Test
 	public void deveVerificarPrimeiroNivel() {
 		given()
 		.when()
@@ -28,7 +28,7 @@ public class UserJsonTest {
 			.body("age", greaterThan(18));
 	}
 	
-	//@Test
+	@Test
 	public void deveVerificarPrimeiroNivelOutrasFormas() {
 		Response request = RestAssured.request(Method.GET, "http://restapi.wcaquino.me/users/1");
 		
@@ -44,7 +44,7 @@ public class UserJsonTest {
 		Assert.assertEquals(1, id);
 	}
 	
-	//@Test
+	@Test
 	public void deveVerificarSegundoNivel() {
 		given()
 		.when()
@@ -56,7 +56,7 @@ public class UserJsonTest {
 			.body("endereco.rua", is("Rua dos bobos"));
 	}
 	
-	//@Test
+	@Test
 	public void deveVerificarUmaLista() {
 		given()
 		.when()
@@ -73,7 +73,7 @@ public class UserJsonTest {
 			;
 	}
 	
-	// @Test
+	@Test
 	public void deveRetornarErroUsuarioInexistente() {
 		given()
 		.when()
@@ -84,7 +84,7 @@ public class UserJsonTest {
 	}
 	
 	@SuppressWarnings("unchecked")
-	// @Test
+	@Test
 	public void deveVerificarListaNaRaiz() {
 		given()
 		.when()
@@ -99,7 +99,7 @@ public class UserJsonTest {
 			;
 	}
 	
-	//@Test
+	@Test
 	public void devoFazerVerificacoesAvancadas() {
 		given()
 		.when()
