@@ -1,8 +1,13 @@
 package rest;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
+import java.util.HashMap;
+
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -146,5 +151,106 @@ public class VerbosTest {
 			.log().all()
 			.body("error", is("Registro inexistente"))
 		;
+	}
+	
+	@Test
+	public void deveSalvarUsuarioUsandoMap() {
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put("name", "Jose");
+		map.put("age", 50);
+		
+		given()
+			.log().all()
+			.contentType("application/json")
+			.body(map)
+		.when()
+			.post("/users")
+		.then()
+			.log().all()
+			.statusCode(201)
+			.body("id", is(notNullValue()))
+			.body("name", is("Jose"))
+			.body("age", is(50))
+			;
+	}
+	
+	@Test
+	public void deveSalvarUsuarioUsandoObjeto() {
+		User usuario = new User("Jose", 50);
+		
+		given()
+			.log().all()
+			.contentType("application/json")
+			.body(usuario)
+		.when()
+			.post("/users")
+		.then()
+			.log().all()
+			.statusCode(201)
+			.body("id", is(notNullValue()))
+			.body("name", is("Jose"))
+			.body("age", is(50))
+			;
+	}
+	
+	@Test
+	public void deveSalvarUsuarioUsandoObjetoEDeceseralizar() {
+		User usuario = new User("Jose", 50);
+		
+		User usuarioInserido = given()
+			.log().all()
+			.contentType("application/json")
+			.body(usuario)
+		.when()
+			.post("/users")
+		.then()
+			.log().all()
+			.statusCode(201)
+			.extract().body().as(User.class)
+			;
+		
+		System.out.println(usuarioInserido);
+		Assert.assertThat(usuarioInserido.getId(), notNullValue());
+		Assert.assertEquals(usuario.getName(), usuarioInserido.getName());
+		Assert.assertThat(usuarioInserido.getIdade(), is(50));
+	}
+	
+	@Test
+	public void deveSalvarUsuarioViaXmlUsandoObjeto() {
+		User usuario = new User("Jose", 50);
+		given()
+			.log().all()
+			.contentType(ContentType.XML)
+			.body(usuario)
+		.when()
+			.post("/usersXML")
+		.then()
+			.log().all()
+			.statusCode(201)
+			.body("user.@id", is(notNullValue()))
+			.body("user.name", is("Jose"))
+			.body("user.age", is("50"))
+			;
+	}
+	
+	@Test
+	public void deveDesearializarUsuarioAoSalvarUsuarioViaXmlUsandoObjeto() {
+		User usuario = new User("Jose", 50);
+		
+		User usuarioInserido = given()
+			.log().all()
+			.contentType(ContentType.XML)
+			.body(usuario)
+		.when()
+			.post("/usersXML")
+		.then()
+			.log().all()
+			.statusCode(201)
+			.extract().body().as(User.class)
+			;
+		System.out.println(usuarioInserido);
+		Assert.assertThat(usuarioInserido.getId(), notNullValue());
+		Assert.assertEquals(usuario.getName(), usuarioInserido.getName());
+		Assert.assertThat(usuarioInserido.getIdade(), is(50));
 	}
 }
